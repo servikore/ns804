@@ -234,6 +234,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\AppExceptionHandler.cs" />
+    <Compile Include="App_Start\AppExceptionLogger.cs" />
     <Compile Include="App_Start\AuthHelper.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\JwtValidationHandler.cs" />

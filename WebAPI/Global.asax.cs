@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Notifications;
 using System.Collections.Generic;
 using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 using System.Web.Mvc;
 using WebAPI.App_Start;
 using WebAPI.Models;
@@ -17,10 +18,15 @@ namespace WebAPI
     public class WebApiApplication : System.Web.HttpApplication
     {
         protected void Application_Start()
-        {
-            //AreaRegistration.RegisterAllAreas();
+        {            
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+
+            //App ExceptionLogger
+            GlobalConfiguration.Configuration.Services.Replace(typeof(IExceptionLogger), new AppExceptionLogger());
+
+            //App ExceptionHandler
+            GlobalConfiguration.Configuration.Services.Replace(typeof(IExceptionHandler), new AppExceptionHandler());
 
             //Handler for Jwt
             GlobalConfiguration.Configuration.MessageHandlers.Add(new JwtValidationHandler());
@@ -55,20 +61,15 @@ namespace WebAPI
 
             builder.Register(c => c.Resolve<MapperConfiguration>().CreateMapper(c.Resolve)).As<IMapper>().InstancePerLifetimeScope();
 
-            //builder.RegisterType<LogWebApiActionAttribute>().PropertiesAutowired();
+            
             builder.RegisterType<NotificationFactory>().As<INotificationFactory>();        
 
             IContainer container = builder.Build();
 
-            //DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            
             GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);
 
-            //IExtensibilityManager extensibilityManager = container.Resolve<IExtensibilityManager>();
-
-            //extensibilityManager.GetModuleEvents(); // stores them in state
-
-            //GlobalFilters.Filters.Add(container.Resolve<LogMvcActionAttribute>());
-            //GlobalConfiguration.Configuration.Filters.Add(container.Resolve<LogWebApiActionAttribute>());
+            
         }
     }
 }
